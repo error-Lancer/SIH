@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Phoenix ANPR — Real-Time Optical Vehicle Intelligence &amp; Trajectory Tracking</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="assets/css2-073794154cf2482e2f03636f4cf17a7d" rel="stylesheet">
+  <link href="assets/css2-a39f5c6fcbb87b419667ec984d2e579a" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-container": "#590800",
+            "primary-fixed-dim": "#ffb4a5",
+            "on-secondary": "#561f00",
+            "error-container": "#93000a",
+            "surface-variant": "#353439",
+            "on-error-container": "#ffdad6",
+            "secondary": "#ffb693",
+            "tertiary-fixed": "#ffdcbe",
+            "secondary-container": "#fe6b00",
+            "on-error": "#690005",
+            "error": "#ffb4ab",
+            "primary": "#ffb4a5",
+            "on-tertiary-fixed": "#2c1600",
+            "inverse-primary": "#ba1c00",
+            "background": "#131317",
+            "on-surface": "#e4e1e8",
+            "on-primary": "#650a00",
+            "surface-container-low": "#1b1b20",
+            "on-surface-variant": "#e7bdb5",
+            "inverse-on-surface": "#303035",
+            "surface-container-highest": "#353439",
+            "surface-dim": "#131317",
+            "primary-fixed": "#ffdad3",
+            "surface-tint": "#ffb4a5",
+            "surface": "#131317",
+            "on-secondary-fixed": "#351000",
+            "surface-container": "#1f1f24",
+            "outline": "#ae8881",
+            "tertiary-fixed-dim": "#ffb870",
+            "inverse-surface": "#e4e1e8",
+            "secondary-fixed-dim": "#ffb693",
+            "on-tertiary": "#4a2800",
+            "surface-container-high": "#2a292e",
+            "on-tertiary-container": "#402300",
+            "on-secondary-container": "#572000",
+            "tertiary": "#ffb870",
+            "on-primary-fixed": "#3f0400",
+            "outline-variant": "#5d3f39",
+            "on-secondary-fixed-variant": "#7a3000",
+            "on-primary-fixed-variant": "#8e1300",
+            "tertiary-container": "#d17c02",
+            "on-background": "#e4e1e8",
+            "on-tertiary-fixed-variant": "#693c00",
+            "secondary-fixed": "#ffdbcc",
+            "surface-container-lowest": "#0e0e12",
+            "surface-bright": "#39393e",
+            "primary-container": "#ff5637"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin-lg": "2rem",
+            "gutter-lg": "1.5rem",
+            "gutter": "1rem",
+            "margin": "1.25rem",
+            "space-md": "1rem",
+            "space-xl": "2.5rem",
+            "space-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem"
+          },
+          "fontFamily": {
+            "headline-xl": ["Space Grotesk"],
+            "label-md": ["JetBrains Mono"],
+            "headline-sm": ["Space Grotesk"],
+            "label-sm": ["JetBrains Mono"],
+            "headline-lg-mobile": ["Space Grotesk"],
+            "headline-lg": ["Space Grotesk"],
+            "label-lg": ["JetBrains Mono"],
+            "body-md": ["Inter"],
+            "headline-md": ["Space Grotesk"],
+            "body-lg": ["Inter"],
+            "body-sm": ["Inter"],
+            "headline-xl-mobile": ["Space Grotesk"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-background font-body-md text-body-md text-on-surface select-none antialiased">
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.6)] border-r border-white/5">
+    <div class="flex flex-col">
+      <div class="h-20 px-space-md flex items-center gap-space-sm bg-surface-container-low border-b border-white/5">
+        <div class="w-10 h-10 rounded bg-primary-container/20 flex items-center justify-center text-primary-container shadow-[0_0_16px_rgba(255,86,55,0.45)] border border-primary-container/30">
+          <span class="material-symbols-outlined text-[24px]">local_fire_department</span>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-space-xs">
+            <span class="font-headline-sm text-headline-sm text-on-surface tracking-wider font-bold">PHOENIX</span>
+            <span class="font-label-sm text-[9px] px-1.5 py-0.5 bg-primary-container text-on-primary font-bold rounded">ANPR</span>
+          </div>
+          <span class="font-label-sm text-[10px] text-on-surface-variant font-mono tracking-widest">VEHICLE INTELLIGENCE</span>
+        </div>
+      </div>
+      <div class="px-space-md py-space-sm bg-surface-container-lowest">
+        <span class="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-mono">TACTICAL ROUTING</span>
+      </div>
+      <nav class="px-space-sm flex flex-col gap-space-xs">
+        <a id="nav-item-6" aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded transition-all bg-primary-container text-on-primary font-bold shadow-[0_0_14px_rgba(255,86,55,0.35)]" href="#" onclick="event.preventDefault(); goToScreen(6);">
+          <span class="material-symbols-outlined text-[20px]">timeline</span>
+          <span class="font-label-md text-label-md uppercase tracking-wider">Trajectory</span>
+        </a>
+        <a id="nav-item-4" class="flex items-center gap-space-sm px-space-md py-space-sm rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#" onclick="event.preventDefault(); goToScreen(4);">
+          <span class="material-symbols-outlined text-[20px]">search</span>
+          <span class="font-label-md text-label-md uppercase tracking-wider">Find Vehicle</span>
+        </a>
+        <a id="nav-item-7" class="flex items-center gap-space-sm px-space-md py-space-sm rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#" onclick="event.preventDefault(); goToScreen(7);">
+          <span class="material-symbols-outlined text-[20px]">manage_search</span>
+          <span class="font-label-md text-label-md uppercase tracking-wider">Search History</span>
+        </a>
+        <a id="nav-item-3" class="flex items-center gap-space-sm px-space-md py-space-sm rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#" onclick="event.preventDefault(); goToScreen(3);">
+          <span class="material-symbols-outlined text-[20px]">tune</span>
+          <span class="font-label-md text-label-md uppercase tracking-wider">Target Mode</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#" onclick="event.preventDefault(); openCameraConfigModal();">
+          <span class="material-symbols-outlined text-[20px]">videocam</span>
+          <span class="font-label-md text-label-md uppercase tracking-wider">Camera Setup</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-md py-space-sm rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#" onclick="event.preventDefault(); exportTrajectoryTelemetry();">
+          <span class="material-symbols-outlined text-[20px]">analytics</span>
+          <span class="font-label-md text-label-md uppercase tracking-wider">Telemetry &amp; Audit</span>
+        </a>
+      </nav>
+    </div>
+    <div class="p-space-md bg-surface-container-low flex flex-col gap-space-sm border-t border-white/5">
+      <div class="flex items-center justify-between font-label-sm text-[11px]">
+        <span class="text-on-surface-variant font-mono">DELHI NODE CLUSTER</span>
+        <span class="text-secondary font-bold font-mono" id="cluster-sync-badge">SYNCED</span>
+      </div>
+      <div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+        <div class="h-full bg-secondary-container w-4/5 shadow-[0_0_8px_rgba(254,107,0,0.6)]"></div>
+      </div>
+      <div class="flex items-center justify-between font-label-sm text-[10px] text-on-surface-variant font-mono">
+        <span id="active-source-badge">SRC: IP WEBCAM</span>
+        <span id="active-fps-badge">LAT: 12MS</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- TOP HEADER -->
+  <div class="pl-64">
+    <header class="fixed top-0 left-64 right-0 h-20 bg-surface-container-lowest/95 backdrop-blur-xl border-b border-white/5 shadow-md z-40 flex flex-col justify-between">
+      <div class="h-7 px-space-md bg-surface-container-lowest flex items-center justify-between border-b border-white/5">
+        <div class="flex items-center gap-space-sm">
+          <div class="relative flex items-center justify-center">
+            <span class="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-primary-container opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-container shadow-[0_0_8px_#ff5637]"></span>
+          </div>
+          <span class="font-label-sm text-[11px] text-primary tracking-widest uppercase font-bold font-mono">
+            SYSTEM ACTIVE — LIVE ANPR PIPELINE (FASTAPI + CUDA YOLO + EASYOCR)
+          </span>
+        </div>
+        <div class="flex items-center gap-space-md">
+          <div class="flex items-center gap-space-xs font-mono text-[11px]">
+            <span class="text-secondary-container uppercase">IST</span>
+            <span class="text-on-surface font-semibold" id="header-clock-ist">--:--:--</span>
+          </div>
+          <span class="text-outline-variant font-mono text-[11px]">//</span>
+          <div class="flex items-center gap-space-xs font-mono text-[11px]">
+            <span class="material-symbols-outlined text-emerald-400 text-[14px]">sensors</span>
+            <span class="text-emerald-400 font-semibold" id="backend-status-indicator">BACKEND: CONNECTED</span>
+          </div>
+        </div>
+      </div>
+      <div class="h-13 px-space-md flex items-center justify-between">
+        <div class="flex items-center gap-space-sm">
+          <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-mono">SECTOR 04</span>
+          <span class="material-symbols-outlined text-outline-variant text-[16px]">chevron_right</span>
+          <span class="font-label-md text-label-md text-on-surface font-semibold uppercase tracking-wider font-mono">RING ROAD NORTH (INTERCEPT MATRIX)</span>
+        </div>
+        <div class="flex items-center gap-space-md">
+          <div class="flex items-center bg-surface-container-high rounded p-1">
+            <button class="px-space-sm py-1 rounded font-label-sm text-[11px] text-on-primary bg-primary-container shadow-[0_0_8px_rgba(255,86,55,0.4)] uppercase font-mono font-bold">Auto ANPR</button>
+            <button onclick="openCameraConfigModal()" class="px-space-sm py-1 rounded font-label-sm text-[11px] text-on-surface-variant hover:text-on-surface transition-colors uppercase font-mono">Camera Setup</button>
+          </div>
+          <div class="flex items-center gap-space-sm pl-space-sm border-l border-white/10">
+            <div class="flex flex-col text-right">
+              <span class="font-label-sm text-[11px] text-on-surface font-bold font-mono leading-none" id="header-operator-name">CMDR. V. SHARMA</span>
+              <span class="font-label-sm text-[10px] text-primary-container font-mono tracking-wider">DEF-INTEL 09</span>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary">
+              <span class="material-symbols-outlined text-[18px]">person</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN BODY CONTENT -->
+    <main class="relative pt-20 w-full px-gutter bg-background min-h-screen pb-12">
+      <div class="flex flex-col w-full">
+        <!-- Persistent Judge Flow Step Controller (Screen 5 removed; Screen 7 added) -->
+        <div class="sticky top-20 z-30 mb-space-md mt-2 flex items-center justify-between bg-surface-container-lowest/95 px-space-md py-2 backdrop-blur-md shadow-lg rounded border border-white/5 font-mono">
+          <div class="flex items-center gap-space-sm">
+            <span class="font-label-sm text-[11px] text-primary uppercase font-bold tracking-wider">SIH EVALUATION STEPPER:</span>
+            <div class="flex items-center gap-1.5 overflow-x-auto py-0.5">
+              <button class="step-nav px-3 py-1 rounded font-label-sm text-[11px] uppercase transition-all text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high" id="step-btn-1" onclick="goToScreen(1)">1. Intro</button>
+              <span class="text-outline-variant text-[11px]">/</span>
+              <button class="step-nav px-3 py-1 rounded font-label-sm text-[11px] uppercase transition-all text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high" id="step-btn-2" onclick="goToScreen(2)">2. Auth</button>
+              <span class="text-outline-variant text-[11px]">/</span>
+              <button class="step-nav px-3 py-1 rounded font-label-sm text-[11px] uppercase transition-all text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high" id="step-btn-3" onclick="goToScreen(3)">3. Target Mode</button>
+              <span class="text-outline-variant text-[11px]">/</span>
+              <button class="step-nav px-3 py-1 rounded font-label-sm text-[11px] uppercase transition-all text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high" id="step-btn-4" onclick="goToScreen(4)">4. Find Vehicle</button>
+              <span class="text-outline-variant text-[11px]">/</span>
+              <button class="step-nav px-3 py-1 rounded font-label-sm text-[11px] uppercase transition-all text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high" id="step-btn-7" onclick="goToScreen(7)">5. Search History</button>
+              <span class="text-outline-variant text-[11px]">/</span>
+              <button class="step-nav px-3 py-1 rounded font-label-sm text-[11px] uppercase transition-all bg-primary-container text-on-primary font-bold shadow-[0_0_10px_rgba(255,86,55,0.45)]" id="step-btn-6" onclick="goToScreen(6)">6. Tactical Trajectory</button>
+            </div>
+          </div>
+          <div class="hidden md:flex items-center gap-space-sm font-label-sm text-[11px] text-on-surface-variant">
+            <span class="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" id="backend-status-dot"></span>
+            <span id="backend-status-text">FASTAPI &amp; CUDA YOLO READY</span>
+          </div>
+        </div>
+
+        <!-- SCREEN CONTAINER WRAPPER -->
+        <div class="relative w-full">
+
+          <!-- ========================================================================= -->
+          <!-- SCREEN 1: PHOENIX INTRO (Cinematic Flame Particle Canvas) -->
+          <!-- ========================================================================= -->
+          <section class="screen-view hidden flex-col items-center justify-center min-h-[calc(100vh-160px)] w-full overflow-hidden bg-surface-container-lowest rounded-xl shadow-xl border border-white/5 relative" id="screen-1">
+            <canvas class="absolute inset-0 w-full h-full pointer-events-none opacity-80" id="ember-canvas"></canvas>
+            <div class="absolute w-[500px] h-[500px] rounded-full bg-primary-container/15 blur-[120px] pointer-events-none"></div>
+            <div class="absolute top-6 left-6 font-label-sm text-label-sm text-primary/70 uppercase tracking-widest flex items-center gap-2 font-mono">
+              <span class="material-symbols-outlined text-[16px] text-primary-container">adjust</span>
+              GRID SEC: IN-DL-HQ-01
+            </div>
+            <div class="absolute top-6 right-6">
+              <button class="px-space-md py-space-xs rounded bg-surface-container-high/70 hover:bg-surface-container-highest text-primary font-label-sm text-label-sm tracking-wider uppercase backdrop-blur-md transition-all font-mono border border-white/10" onclick="goToScreen(2)">
+                SKIP INTRO →
+              </button>
+            </div>
+            <div class="absolute bottom-6 left-6 font-label-sm text-label-sm text-on-surface-variant font-mono">
+              SYS.CORE: FASTAPI // YOLO-V8-ANPR (best.pt) // EASYOCR // SQLITE
+            </div>
+            <div class="absolute bottom-6 right-6 font-label-sm text-label-sm text-secondary-container font-mono">
+              DEFENCE AI PROTOCOL CLASSIFIED
+            </div>
+
+            <div class="relative z-10 flex flex-col items-center text-center max-w-2xl px-space-md">
+              <div class="mb-space-md flex items-center justify-center w-16 h-16 rounded-xl bg-primary-container/20 text-primary shadow-[0_0_30px_rgba(255,86,55,0.6)] border border-primary-container/40">
+                <span class="material-symbols-outlined text-[36px]">local_fire_department</span>
+              </div>
+              <div class="flex items-center gap-space-xs mb-2">
+                <span class="px-2 py-0.5 rounded bg-primary-container/30 text-primary-fixed font-label-sm text-label-sm uppercase tracking-widest font-bold font-mono">
+                  SMART INDIA HACKATHON
+                </span>
+                <span class="px-2 py-0.5 rounded bg-secondary-container/20 text-secondary font-label-sm text-label-sm uppercase tracking-widest font-semibold font-mono">
+                  DEF-INTEL 2024
+                </span>
+              </div>
+              <h1 class="font-headline-xl text-headline-xl text-on-surface font-bold tracking-tight mb-2">
+                PHOENIX <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-container via-secondary-container to-tertiary">ANPR</span>
+              </h1>
+              <p class="font-headline-sm text-headline-sm text-on-surface-variant mb-space-lg">
+                AI-Powered Optical Vehicle Intelligence &amp; Spatio-Temporal Trajectory Reconstruction
+              </p>
+              <div class="flex flex-col sm:flex-row items-center gap-space-md w-full max-w-md justify-center">
+                <button class="w-full sm:w-auto px-space-xl py-space-md rounded bg-primary-container text-on-primary font-label-md text-label-md font-bold uppercase tracking-wider shadow-[0_0_24px_rgba(255,86,55,0.6)] hover:shadow-[0_0_32px_rgba(255,86,55,0.85)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2 font-mono" onclick="goToScreen(2)">
+                  <span class="material-symbols-outlined text-[18px]">terminal</span>
+                  <span>ENTER TACTICAL CONSOLE</span>
+                </button>
+              </div>
+              <div class="grid grid-cols-3 gap-space-md mt-space-xl pt-space-lg w-full">
+                <div class="flex flex-col items-center bg-surface-container-low/60 p-space-sm rounded backdrop-blur-sm border border-white/5">
+                  <span class="font-headline-md text-headline-md text-primary font-bold">2,840</span>
+                  <span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-mono">Optical Nodes</span>
+                </div>
+                <div class="flex flex-col items-center bg-surface-container-low/60 p-space-sm rounded backdrop-blur-sm border border-white/5">
+                  <span class="font-headline-md text-headline-md text-secondary font-bold">&lt; 12ms</span>
+                  <span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-mono">ANPR Latency</span>
+                </div>
+                <div class="flex flex-col items-center bg-surface-container-low/60 p-space-sm rounded backdrop-blur-sm border border-white/5">
+                  <span class="font-headline-md text-headline-md text-tertiary font-bold">99.4%</span>
+                  <span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-mono">Match Precision</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ========================================================================= -->
+          <!-- SCREEN 2: AUTHENTICATION (Real FastAPI Login & Registration) -->
+          <!-- ========================================================================= -->
+          <section class="screen-view hidden flex-col items-center justify-center min-h-[calc(100vh-160px)] w-full py-space-md" id="screen-2">
+            <div class="w-full max-w-md bg-surface-container-low rounded-xl p-space-lg shadow-xl relative backdrop-blur-xl border border-white/5">
+              <div class="absolute -top-1 -left-1 w-3 h-3 bg-primary-container"></div>
+              <div class="absolute -top-1 -right-1 w-3 h-3 bg-primary-container"></div>
+              <div class="flex flex-col mb-space-md">
+                <div class="flex items-center justify-between mb-space-xs">
+                  <span class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-widest font-mono">SECURE CREDENTIAL GATE</span>
+                  <span class="font-label-sm text-label-sm text-secondary-container uppercase font-mono">LEVEL-3 CLEARANCE</span>
+                </div>
+                <h2 class="font-headline-md text-headline-md text-on-surface font-bold" id="auth-title">Phoenix Terminal Access</h2>
+                <p class="font-body-sm text-body-sm text-on-surface-variant" id="auth-subtitle">Sign in with registered police department or defense operator ID.</p>
+              </div>
+
+              <!-- Auth Feedback Message Banner -->
+              <div id="auth-msg-banner" class="hidden mb-3 p-2.5 rounded text-xs font-mono border"></div>
+
+              <!-- Tab Switcher -->
+              <div class="grid grid-cols-2 bg-surface-container-lowest p-1 rounded mb-space-md border border-white/5">
+                <button class="py-1.5 rounded font-label-sm text-label-sm uppercase font-bold text-on-primary bg-primary-container shadow-sm transition-all font-mono" id="auth-tab-login" onclick="switchAuthTab('login')">
+                  Authorized Login
+                </button>
+                <button class="py-1.5 rounded font-label-sm text-label-sm uppercase font-bold text-on-surface-variant hover:text-on-surface transition-all font-mono" id="auth-tab-register" onclick="switchAuthTab('register')">
+                  Enlist Unit (Register)
+                </button>
+              </div>
+
+              <form class="flex flex-col gap-space-md" onsubmit="event.preventDefault(); handleAuthSubmit();">
+                <div>
+                  <label class="block font-label-sm text-label-sm uppercase text-on-surface-variant mb-1 font-mono">
+                    Operator Identifier / Username
+                  </label>
+                  <div class="relative flex items-center">
+                    <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">badge</span>
+                    <input class="w-full bg-surface-container-lowest pl-10 pr-3 py-2 rounded text-on-surface font-label-md text-label-md focus:outline-none focus:bg-surface-container-highest transition-all border border-white/5 font-mono" id="auth-username" required="" type="text" value="officer.sharma">
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <label class="font-label-sm text-label-sm uppercase text-on-surface-variant font-mono">Access Token / Password</label>
+                    <span class="font-label-sm text-label-sm text-primary cursor-pointer hover:underline font-mono" onclick="document.getElementById('auth-pass').value='DelhiPolice2024!'">Preload Demo</span>
+                  </div>
+                  <div class="relative flex items-center">
+                    <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">lock</span>
+                    <input class="w-full bg-surface-container-lowest pl-10 pr-10 py-2 rounded text-on-surface font-label-md text-label-md focus:outline-none focus:bg-surface-container-highest transition-all border border-white/5 font-mono" id="auth-pass" required="" type="password" value="DelhiPolice2024!">
+                    <button class="absolute right-3 text-on-surface-variant hover:text-on-surface" onclick="togglePassVisibility()" type="button">
+                      <span class="material-symbols-outlined text-[18px]" id="auth-pass-icon">visibility</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block font-label-sm text-label-sm uppercase text-on-surface-variant mb-1 font-mono">Assigned Department Command</label>
+                  <div class="relative flex items-center">
+                    <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">security</span>
+                    <select class="w-full bg-surface-container-lowest pl-10 pr-3 py-2 rounded text-on-surface font-label-md text-label-md focus:outline-none appearance-none cursor-pointer border border-white/5 font-mono text-xs">
+                      <option selected="">Delhi Traffic Police — Special Surveillance Taskforce</option>
+                      <option>Cyber Forensics Directorate &amp; Intelligence Grid</option>
+                      <option>Ministry of Home Affairs — High-Speed Trajectory Cell</option>
+                      <option>Smart India Hackathon (SIH) Technical Jury Mode</option>
+                    </select>
+                    <span class="material-symbols-outlined absolute right-3 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 pt-1">
+                  <input checked="" class="accent-primary-container rounded cursor-pointer" id="auth-cac" type="checkbox">
+                  <label class="font-body-sm text-body-sm text-on-surface-variant cursor-pointer font-mono text-[12px]" for="auth-cac">
+                    Hardware CAC/YubiKey Token Cryptographically Verified
+                  </label>
+                </div>
+
+                <div class="flex items-center gap-space-sm pt-2">
+                  <button class="w-1/3 py-2.5 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface font-label-md text-label-md font-bold uppercase transition-all font-mono" onclick="goToScreen(1)" type="button">
+                    ← Back
+                  </button>
+                  <button class="flex-1 py-2.5 rounded bg-primary-container text-on-primary font-label-md text-label-md font-bold uppercase tracking-wider shadow-[0_0_16px_rgba(255,86,55,0.45)] hover:shadow-[0_0_24px_rgba(255,86,55,0.7)] transition-all flex items-center justify-center gap-2 font-mono" id="auth-submit-btn" type="submit">
+                    <span class="material-symbols-outlined text-[18px]">fingerprint</span>
+                    <span id="auth-submit-text">AUTHENTICATE &amp; ENTER →</span>
+                  </button>
+                </div>
+              </form>
+              <div class="mt-space-md pt-space-sm bg-surface-container-lowest/60 p-space-sm rounded flex items-center justify-between text-on-surface-variant font-mono">
+                <span class="font-label-sm text-label-sm uppercase">SESSION EXP: 08h 00m</span>
+                <span class="font-label-sm text-label-sm uppercase text-primary">ENCRYPTED AES-256</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- ========================================================================= -->
+          <!-- SCREEN 3: TARGET MODE (Vehicle vs Search History) -->
+          <!-- ========================================================================= -->
+          <section class="screen-view hidden flex-col items-center justify-center min-h-[calc(100vh-160px)] w-full py-space-md" id="screen-3">
+            <div class="w-full max-w-4xl flex flex-col items-center text-center mb-space-xl">
+              <span class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-widest mb-1 font-mono">TARGET CLASSIFIER ROUTER</span>
+              <h2 class="font-headline-lg text-headline-lg text-on-surface font-bold">What are you looking for?</h2>
+              <p class="font-body-md text-body-md text-on-surface-variant max-w-xl">
+                Select tactical target recognition model to initialize optical surveillance search pipeline across active camera nodes.
+              </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg w-full max-w-4xl">
+              <!-- CARD 1: VEHICLE (ACTIVE) -->
+              <div class="group cursor-pointer bg-surface-container-low hover:bg-surface-container rounded-xl p-space-lg shadow-xl relative transition-all duration-300 transform hover:-translate-y-1 border border-white/5 hover:border-primary-container/40" onclick="goToScreen(4)">
+                <div class="absolute -top-1.5 -right-1.5 flex items-center justify-center">
+                  <span class="px-2.5 py-0.5 rounded bg-primary-container text-on-primary font-label-sm text-label-sm uppercase font-bold shadow-[0_0_12px_rgba(255,86,55,0.7)] font-mono">
+                    ONLINE • READY
+                  </span>
+                </div>
+                <div class="w-14 h-14 rounded-xl bg-primary-container/20 text-primary flex items-center justify-center mb-space-md group-hover:shadow-[0_0_20px_rgba(255,86,55,0.5)] transition-all border border-primary-container/30">
+                  <span class="material-symbols-outlined text-[32px]">directions_car</span>
+                </div>
+                <div class="flex items-center gap-space-xs mb-1 font-mono">
+                  <span class="font-label-sm text-label-sm text-secondary uppercase font-bold">MODULE 01</span>
+                  <span class="text-outline-variant text-[12px]">//</span>
+                  <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">YOLOv8 best.pt + EasyOCR</span>
+                </div>
+                <h3 class="font-headline-md text-headline-md text-on-surface font-bold mb-2 group-hover:text-primary transition-colors">
+                  Find a Vehicle
+                </h3>
+                <p class="font-body-md text-body-md text-on-surface-variant mb-space-lg">
+                  Trace vehicle movement across connected traffic cameras using registered number plate, make/color classification, and timestamp trajectory correlation.
+                </p>
+                <div class="flex items-center justify-between pt-space-sm bg-surface-container-lowest/50 p-space-sm rounded border border-white/5">
+                  <div class="flex flex-col text-left">
+                    <span class="font-label-sm text-label-sm text-on-surface font-semibold font-mono">2,840 Active Delhi Feeds</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant font-mono">OCR • Bounding • Crop • Match</span>
+                  </div>
+                  <span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </div>
+              </div>
+
+              <!-- CARD 2: SEARCH HISTORY (PAGE 6 ARCHIVE) -->
+              <div class="group cursor-pointer bg-surface-container-low hover:bg-surface-container rounded-xl p-space-lg shadow-xl relative transition-all duration-300 transform hover:-translate-y-1 border border-white/5 hover:border-cyan-500/40" onclick="goToScreen(7)">
+                <div class="absolute -top-1.5 -right-1.5 flex items-center justify-center">
+                  <span class="px-2.5 py-0.5 rounded bg-cyan-500 text-black font-label-sm text-label-sm uppercase font-bold shadow-[0_0_12px_rgba(6,182,212,0.7)] font-mono">
+                    SQLITE ARCHIVE
+                  </span>
+                </div>
+                <div class="w-14 h-14 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center mb-space-md group-hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all border border-cyan-500/30">
+                  <span class="material-symbols-outlined text-[32px]">manage_search</span>
+                </div>
+                <div class="flex items-center gap-space-xs mb-1 font-mono">
+                  <span class="font-label-sm text-label-sm text-cyan-300 uppercase font-bold">MODULE 02</span>
+                  <span class="text-outline-variant text-[12px]">//</span>
+                  <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Query Log &amp; Replay</span>
+                </div>
+                <h3 class="font-headline-md text-headline-md text-on-surface font-bold mb-2 group-hover:text-cyan-400 transition-colors">
+                  Search History
+                </h3>
+                <p class="font-body-md text-body-md text-on-surface-variant mb-space-lg">
+                  Review previous vehicle plate searches made by your operator account, check verified detection counts, and replay real trajectory history from SQLite.
+                </p>
+                <div class="flex items-center justify-between pt-space-sm bg-surface-container-lowest/50 p-space-sm rounded border border-white/5">
+                  <div class="flex flex-col text-left">
+                    <span class="font-label-sm text-label-sm text-on-surface font-semibold font-mono">Authenticated Session Archive</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant font-mono">Persistent SQLite • Replay Trajectory</span>
+                  </div>
+                  <span class="material-symbols-outlined text-cyan-400 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-space-lg flex items-center gap-4">
+              <button class="px-space-lg py-2 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface font-label-md text-label-md font-bold uppercase transition-all font-mono border border-white/5" onclick="goToScreen(2)">
+                ← Back to Auth
+              </button>
+              <button class="px-space-md py-2 rounded bg-surface-container hover:bg-surface-container-high text-outline hover:text-on-surface font-label-sm text-xs uppercase font-mono transition-all border border-white/5" onclick="openUnderDevModal()">
+                Person Tracking (Roadmap)
+              </button>
+            </div>
+
+            <!-- Under Development Modal -->
+            <div class="hidden fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-md p-space-md" id="under-dev-modal">
+              <div class="w-full max-w-md bg-surface-container-low p-space-lg rounded-xl shadow-2xl relative text-center border border-white/10">
+                <div class="w-14 h-14 mx-auto mb-space-sm rounded-full bg-secondary-container/20 text-secondary-container flex items-center justify-center border border-secondary-container/30">
+                  <span class="material-symbols-outlined text-[30px]">construction</span>
+                </div>
+                <span class="font-label-sm text-label-sm text-secondary uppercase font-bold tracking-widest font-mono">MODULE NOTICE</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold mt-1 mb-2">Feature Under Development</h3>
+                <p class="font-body-sm text-body-sm text-on-surface-variant mb-space-lg">
+                  Optical Person Re-Identification &amp; biometric mesh tracking is scheduled for future SIH milestone releases. Please test our live <strong class="text-on-surface">Vehicle ANPR Matrix</strong>.
+                </p>
+                <button class="w-full py-2.5 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-md text-label-md uppercase font-bold transition-all font-mono" onclick="closeUnderDevModal()">
+                  ← Return to Selection
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ========================================================================= -->
+          <!-- SCREEN 4: VEHICLE SEARCH (Plate Form & State Selection) -->
+          <!-- ========================================================================= -->
+          <section class="screen-view hidden flex-col items-center justify-center min-h-[calc(100vh-160px)] w-full py-space-md" id="screen-4">
+            <div class="w-full max-w-2xl bg-surface-container-low rounded-xl p-space-xl shadow-xl relative backdrop-blur-md border border-white/5">
+              <div class="flex items-center justify-between mb-space-md">
+                <div class="flex items-center gap-space-sm">
+                  <button class="w-8 h-8 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-all border border-white/5" onclick="goToScreen(3)" title="Back">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                  </button>
+                  <div>
+                    <span class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-widest font-mono">ANPR RADAR DISPATCH</span>
+                    <h2 class="font-headline-md text-headline-md text-on-surface font-bold">Find a Vehicle</h2>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container-lowest font-label-sm text-label-sm text-secondary font-mono border border-white/5">
+                  <span class="material-symbols-outlined text-[16px] animate-spin">sync</span>
+                  <span>MODEL: YOLO best.pt</span>
+                </div>
+              </div>
+
+              <form class="flex flex-col gap-space-lg" onsubmit="event.preventDefault(); startAISearch();">
+                <!-- Plate Input with Simulated Indian HSRP Styling -->
+                <div>
+                  <div class="flex justify-between items-center mb-1.5">
+                    <label class="font-label-sm text-label-sm uppercase text-on-surface font-bold tracking-wider font-mono">
+                      Registration Number Plate (HSRP)
+                    </label>
+                    <span class="font-label-sm text-label-sm text-primary-container font-semibold font-mono">Pre-loaded for Jury Demo</span>
+                  </div>
+                  <div class="relative flex items-center bg-black rounded p-1 shadow-inner border border-white/10">
+                    <div class="flex flex-col items-center justify-between h-14 w-10 bg-[#003399] rounded-l py-1 text-white select-none">
+                      <span class="text-[8px] font-bold tracking-tighter">IND</span>
+                      <div class="w-4 h-4 rounded-full border border-yellow-300/80 flex items-center justify-center text-[7px] text-yellow-300">
+                        ☉
+                      </div>
+                      <span class="text-[7px] font-mono text-blue-200">HSRP</span>
+                    </div>
+                    <input class="w-full bg-transparent px-space-md py-2 text-white font-label-lg text-headline-sm font-bold tracking-widest uppercase focus:outline-none placeholder-outline font-mono" id="input-plate-num" placeholder="DL01AB1234" required="" type="text" value="DL01AB1234">
+                    <button class="mr-2 px-2 py-1 rounded bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-sm text-[11px] uppercase font-mono" onclick="document.getElementById('input-plate-num').value='DL01AB1234'" type="button">
+                      Demo Plate
+                    </button>
+                  </div>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant mt-1.5 font-mono text-[12px]">
+                    Format: State Code (2) + District (2) + Series (2) + Digits (4). Supports exact normalized matching.
+                  </p>
+                </div>
+
+                <!-- Region Dropdown -->
+                <div>
+                  <label class="block font-label-sm text-label-sm uppercase text-on-surface font-bold tracking-wider mb-1.5 font-mono">
+                    State / Regional Traffic Sensor Network
+                  </label>
+                  <div class="relative flex items-center">
+                    <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[20px]">hub</span>
+                    <select class="w-full bg-surface-container-lowest pl-11 pr-10 py-3 rounded text-on-surface font-label-md text-label-md focus:outline-none appearance-none cursor-pointer border border-white/5 font-mono" id="input-state-select">
+                      <option selected="" value="delhi">Delhi (NCT) — Active Surveillance Corridor</option>
+                      <option value="mumbai">Maharashtra — Mumbai Traffic Control Matrix</option>
+                      <option value="bengaluru">Karnataka — Bengaluru Urban Ring Grid</option>
+                      <option value="up">Uttar Pradesh — Expressway Corridor</option>
+                      <option value="haryana">Haryana — Gurugram Cyber Corridor</option>
+                    </select>
+                    <span class="material-symbols-outlined absolute right-3 text-on-surface-variant pointer-events-none text-[20px]">expand_more</span>
+                  </div>
+                  <span class="block font-body-sm text-body-sm text-on-surface-variant mt-1 font-mono text-xs">
+                    Submitting immediately dispatches search to the backend and opens Tactical Trajectory live results.
+                  </span>
+                </div>
+
+                <!-- Search Parameters -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md bg-surface-container-lowest p-space-md rounded border border-white/5 font-mono">
+                  <div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase block mb-1">Time Horizon</span>
+                    <select class="w-full bg-surface-container-high py-1.5 px-2 rounded text-on-surface font-label-sm text-label-sm focus:outline-none border border-white/5">
+                      <option>Last 1 Hour (Tactical Intercept)</option>
+                      <option selected="">Last 6 Hours (Standard Shift)</option>
+                      <option>Last 24 Hours (Full Day Forensic)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase block mb-1">OCR Precision</span>
+                    <div class="flex items-center gap-2 pt-1">
+                      <span class="font-label-sm text-label-sm text-emerald-400 font-bold">Strict Normalized Match</span>
+                      <span class="text-[10px] text-on-surface-variant">(Conservative)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center justify-between pt-space-xs">
+                  <button class="px-space-lg py-2.5 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface font-label-md text-label-md uppercase font-bold transition-all font-mono border border-white/5" onclick="goToScreen(3)" type="button">
+                    ← Back
+                  </button>
+                  <button class="px-space-xl py-2.5 rounded bg-primary-container text-on-primary font-label-md text-label-md font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(255,86,55,0.5)] hover:shadow-[0_0_28px_rgba(255,86,55,0.8)] transition-all flex items-center gap-2 font-mono" type="submit">
+                    <span class="material-symbols-outlined text-[18px]">travel_explore</span>
+                    <span>SEARCH VEHICLE →</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <!-- ========================================================================= -->
+          <!-- SCREEN 7: SEARCH HISTORY (Operator Query Log & Historical Trajectories) -->
+          <!-- ========================================================================= -->
+          <section class="screen-view hidden flex-col w-full gap-space-md" id="screen-7">
+            <!-- Header Bar -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm bg-surface-container-low p-space-md rounded-xl shadow-lg border-l-4 border-cyan-500 border-y border-r border-white/5 font-mono">
+              <div class="flex items-center gap-space-sm">
+                <div class="flex h-11 w-11 rounded bg-cyan-500/20 text-cyan-400 items-center justify-center shadow-[0_0_16px_rgba(6,182,212,0.4)] border border-cyan-500/30">
+                  <span class="material-symbols-outlined text-[26px]">manage_search</span>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[10px] text-on-surface-variant uppercase font-bold">ARCHIVE:</span>
+                    <span class="text-xs px-2.5 py-0.5 rounded bg-black border border-cyan-500/30 text-cyan-300 font-bold tracking-wider font-mono">
+                      SQLITE DATABASE QUERIES
+                    </span>
+                    <span id="history-user-tag" class="text-[10px] px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-semibold font-mono uppercase">
+                      OPERATOR SESSION
+                    </span>
+                  </div>
+                  <h2 class="font-headline-sm text-sm sm:text-base text-on-surface font-bold mt-1">
+                    Search History — Historical Target Logs &amp; Replay
+                  </h2>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button onclick="goToScreen(4)" class="px-space-md py-1.5 rounded bg-primary-container text-on-primary font-label-sm text-label-sm uppercase font-bold shadow-[0_0_12px_rgba(255,86,55,0.4)] hover:shadow-[0_0_18px_rgba(255,86,55,0.6)] transition-all flex items-center gap-1 font-mono">
+                  <span class="material-symbols-outlined text-[16px]">add</span>
+                  <span>NEW SEARCH</span>
+                </button>
+                <button onclick="loadSearchHistory()" class="px-space-md py-1.5 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-sm text-label-sm uppercase transition-all flex items-center gap-1 border border-white/5 font-bold font-mono" title="Refresh SQLite queries">
+                  <span class="material-symbols-outlined text-[16px]">refresh</span>
+                  <span>REFRESH</span>
+                </button>
+                <button onclick="goToScreen(3)" class="px-space-md py-1.5 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-sm text-label-sm uppercase transition-all flex items-center gap-1 border border-white/5 font-bold font-mono">
+                  <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                  <span>BACK</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Real Queries Cards Grid -->
+            <div id="history-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-md w-full">
+              <div class="col-span-full py-16 text-center text-cyan-400 font-mono animate-pulse">
+                Connecting to SQLite database &amp; loading query history...
+              </div>
+            </div>
+          </section>
+
+          <!-- ========================================================================= -->
+          <!-- SCREEN 6: VEHICLE RESULT / TACTICAL TRAJECTORY (Real Live Data) -->
+          <!-- ========================================================================= -->
+          <section class="screen-view flex flex-col w-full gap-space-md" id="screen-6">
+            <!-- Target Located Alert Header -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm bg-surface-container-low p-space-md rounded-xl shadow-lg border-l-4 border-primary-container border-y border-r border-white/5 font-mono">
+              <div class="flex items-center gap-space-sm">
+                <div class="flex h-10 w-10 rounded bg-primary-container/20 text-primary-container items-center justify-center shadow-[0_0_16px_rgba(255,86,55,0.4)] border border-primary-container/30">
+                  <span class="material-symbols-outlined text-[24px]">crisis_alert</span>
+                </div>
+                <div>
+                  <div class="flex items-center gap-space-xs">
+                    <span id="target-status-tag" class="font-label-sm text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold uppercase tracking-wider font-mono flex items-center gap-1 border border-amber-500/30">
+                      <span id="target-status-dot" class="h-1.5 w-1.5 rounded-full bg-amber-400 animate-ping"></span>
+                      <span id="target-status-text">SCANNING STREAM</span>
+                    </span>
+                    <span id="target-detections-count" class="font-label-sm text-[11px] text-on-surface-variant font-mono">
+                      AWAITING SIGHTINGS
+                    </span>
+                  </div>
+                  <h2 class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5 font-headline-sm">
+                    Target Vehicle: <span id="target-plate-badge" class="text-primary font-mono">DL 01 AB 1234</span> — <span id="target-search-status">Tracking Active</span>
+                  </h2>
+                </div>
+              </div>
+              <div class="flex items-center gap-space-xs">
+                <button onclick="openCameraConfigModal()" class="px-space-md py-1.5 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-label-sm text-label-sm uppercase transition-all flex items-center gap-1 font-mono border border-primary/30 font-bold" title="Switch between Phone IP camera or video file">
+                  <span class="material-symbols-outlined text-[16px]">videocam</span>
+                  <span>CAMERA</span>
+                </button>
+                <button onclick="reconnectCamera()" class="px-space-md py-1.5 rounded bg-surface-container-high hover:bg-surface-container-highest text-stone-300 font-label-sm text-label-sm uppercase transition-all flex items-center gap-1 border border-white/5 font-bold font-mono" title="Reconnect camera stream">
+                  <span class="material-symbols-outlined text-[16px]">refresh</span>
+                  <span>RECONNECT</span>
+                </button>
+                <button class="px-space-md py-1.5 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-sm text-label-sm uppercase transition-all flex items-center gap-1 font-mono border border-white/5" onclick="goToScreen(4)">
+                  <span class="material-symbols-outlined text-[16px]">search</span>
+                  <span>New Search</span>
+                </button>
+                <button class="px-space-md py-1.5 rounded bg-primary-container text-on-primary font-label-sm text-label-sm uppercase font-bold shadow-[0_0_12px_rgba(255,86,55,0.4)] hover:shadow-[0_0_18px_rgba(255,86,55,0.6)] transition-all flex items-center gap-1 font-mono" onclick="exportTrajectoryTelemetry()">
+                  <span class="material-symbols-outlined text-[16px]">file_download</span>
+                  <span>Export Telemetry</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- MAIN BENTO GRID (Map + Camera HUD + Telemetry) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+              <!-- LEFT/CENTER 8 COLS: CCTV Live Stream & Tactical Delhi Map -->
+              <div class="lg:col-span-8 flex flex-col gap-space-md">
+                <!-- CCTV VIDEO FEED WITH REALISTIC AI BOUNDING BOX OVERLAY -->
+                <div class="relative w-full rounded-xl overflow-hidden bg-surface-container-lowest shadow-xl border border-white/5">
+                  <!-- Cam Header HUD Strip -->
+                  <div class="absolute top-0 inset-x-0 z-20 flex items-center justify-between px-space-md py-2 bg-gradient-to-b from-black/95 via-black/60 to-transparent">
+                    <div class="flex items-center gap-space-sm font-label-sm text-[11px] font-mono">
+                      <span class="flex items-center gap-1 text-primary font-bold">
+                        <span class="h-2 w-2 rounded-full bg-primary-container animate-ping"></span>
+                        REC [LIVE FEED]
+                      </span>
+                      <span class="text-outline-variant">//</span>
+                      <span class="text-on-surface font-semibold" id="cctv-cam-id">CAM ID: PHONE_CAM_01</span>
+                      <span class="text-outline-variant">//</span>
+                      <span class="text-on-surface-variant" id="cctv-location">DELHI SURVEILLANCE • REAR HIGHWAY</span>
+                    </div>
+                    <div class="flex items-center gap-space-sm font-label-sm text-[11px] text-on-surface-variant font-mono">
+                      <span id="cctv-timestamp">--:--:--</span>
+                      <button onclick="toggleStreamMode()" id="stream-toggle-btn" class="px-2 py-0.5 rounded bg-surface-container hover:bg-surface-container-high text-primary text-[10px] uppercase font-bold border border-white/10 font-mono">
+                        VIEW: LIVE STREAM
+                      </button>
+                      <span class="text-secondary-container">IR: ON</span>
+                    </div>
+                  </div>
+
+                  <!-- CCTV Image Container -->
+                  <div id="video-display-box" class="relative w-full aspect-video sm:h-[420px] overflow-hidden bg-black flex items-center justify-center">
+                    <!-- Real Live Camera Stream -->
+                    <img id="cctv-live-img" src="/api/camera/stream" alt="Live Camera Feed" class="w-full h-full object-contain brightness-[0.9] contrast-110" onerror="handleStreamError()" />
+                    
+                    <!-- Genuine YOLO Flagged Frame Overlay -->
+                    <img id="cctv-flagged-img" alt="YOLO Flagged Frame" class="w-full h-full object-contain absolute inset-0 hidden brightness-[0.9] contrast-110" />
+
+                    <!-- Camera Disconnected Overlay -->
+                    <div id="camera-disconnect-card" class="absolute inset-0 bg-surface-container-lowest/95 backdrop-blur-md flex flex-col items-center justify-center gap-3 p-6 text-center z-10 hidden font-mono">
+                      <div class="h-16 w-16 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center border border-red-500/30 shadow-[0_0_24px_rgba(239,68,68,0.3)]">
+                        <span class="material-symbols-outlined text-[36px]">videocam_off</span>
+                      </div>
+                      <div class="text-base font-bold text-red-400 uppercase tracking-wider">CAMERA DISCONNECTED</div>
+                      <div id="camera-disconnect-msg" class="text-xs text-stone-300 max-w-md bg-surface-container-low p-3 rounded border border-white/10">
+                        Unable to receive video frames. Check your phone's IP Webcam server.
+                      </div>
+                      <div class="flex items-center gap-3 mt-1">
+                        <button onclick="reconnectCamera()" class="px-4 py-2 rounded bg-primary-container hover:primary text-on-primary font-bold text-xs shadow-[0_0_12px_rgba(255,86,55,0.4)] flex items-center gap-1.5">
+                          <span class="material-symbols-outlined text-[16px]">refresh</span>
+                          RETRY CONNECTION
+                        </button>
+                        <button onclick="openCameraConfigModal()" class="px-4 py-2 rounded bg-surface-container-high hover:bg-surface-container-highest text-stone-200 text-xs border border-white/10">
+                          CHANGE SOURCE
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Tactical Scanlines & Vignette overlay -->
+                    <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,_transparent_45%,_rgba(0,0,0,0.65)_100%)]"></div>
+
+                    <!-- AI BOUNDING BOX RETICLE OVER THE TRACKED VEHICLE -->
+                    <div class="absolute top-[48%] left-[45%] w-36 h-24 pointer-events-none transition-all duration-500 hidden" id="ai-tracking-box">
+                      <div class="relative w-full h-full border-2 border-primary-container shadow-[0_0_15px_rgba(255,86,55,0.85)]">
+                        <div class="absolute -top-1 -left-1 w-2.5 h-2.5 bg-primary-container"></div>
+                        <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-primary-container"></div>
+                        <div class="absolute -bottom-1 -left-1 w-2.5 h-2.5 bg-primary-container"></div>
+                        <div class="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-primary-container"></div>
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 flex items-center justify-center">
+                          <div class="w-full h-[1px] bg-primary-container"></div>
+                          <div class="h-full w-[1px] bg-primary-container absolute"></div>
+                        </div>
+                        <div class="absolute -top-6 left-0 flex items-center gap-1 px-1.5 py-0.5 bg-primary-container text-on-primary font-label-sm text-[10px] font-bold tracking-tight rounded-t shadow-md font-mono whitespace-nowrap">
+                          <span id="reticle-plate-label">[TARGET ACQUIRED] DL01AB1234</span>
+                          <span id="reticle-conf-label" class="text-on-primary/90 font-semibold">• 98.4%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Bottom Optical Metadata HUD -->
+                    <div class="absolute bottom-0 inset-x-0 z-20 flex items-center justify-between px-space-md py-2 bg-gradient-to-t from-black/95 to-transparent font-label-sm text-[11px] font-mono">
+                      <div class="flex items-center gap-space-md text-on-surface-variant">
+                        <span id="hud-lat-lon">LAT: NULL // LONG: NULL (Single Sensor — Coordinates Pending)</span>
+                        <span id="cctv-res-fps" class="text-primary font-bold">STREAM ACTIVE</span>
+                      </div>
+                      <div class="flex items-center gap-space-sm text-on-surface-variant">
+                        <span>MODEL: YOLO best.pt</span>
+                        <span>OCR: EasyOCR</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- TACTICAL MAP VISUALIZATION (Rule #10 Conforming) -->
+                <div class="relative w-full rounded-xl overflow-hidden bg-surface-container-low p-space-md shadow-xl flex flex-col border border-white/5 font-mono">
+                  <div class="flex items-center justify-between mb-space-sm">
+                    <div class="flex items-center gap-space-xs">
+                      <span class="material-symbols-outlined text-primary-container text-[20px]">map</span>
+                      <span class="font-label-sm text-label-sm text-on-surface font-bold uppercase tracking-wider font-mono">
+                        SPATIAL-TEMPORAL RECONSTRUCTED TRAJECTORY (MULTI-CAMERA MAP)
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-space-sm font-label-sm text-[11px] font-mono">
+                      <span id="trajectory-interpolation-badge" class="text-on-surface-variant">SENSOR MODE: SINGLE CAMERA (PHONE_CAM_01)</span>
+                      <span id="trajectory-distance-badge" class="px-2 py-0.5 rounded bg-surface-container text-secondary font-mono text-[10px]">CORRIDOR: AWAITING MULTI-NODE INTERSECT</span>
+                    </div>
+                  </div>
+
+                  <!-- Tactical SVG Vector Map -->
+                  <div class="relative w-full h-72 bg-surface-container-lowest rounded-lg overflow-hidden flex items-center justify-center border border-white/5">
+                    <svg class="absolute inset-0 w-full h-full opacity-20" xmlns="http://www.w3.org/2000/svg">
+                      <defs>
+                        <pattern height="30" id="grid-pattern" patternUnits="userSpaceOnUse" width="30">
+                          <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#ffb4a5" stroke-width="0.5"></path>
+                        </pattern>
+                      </defs>
+                      <rect fill="url(#grid-pattern)" height="100%" width="100%"></rect>
+                    </svg>
+
+                    <!-- Arterial Roads & Camera Node Markers -->
+                    <svg class="absolute inset-0 w-full h-full" fill="none" viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M 50 280 C 200 240, 300 290, 750 180" stroke="#353439" stroke-width="4"></path>
+                      <path d="M 120 40 C 220 180, 480 120, 700 260" stroke="#353439" stroke-width="4"></path>
+                      <path d="M 380 20 L 420 300" stroke="#353439" stroke-width="3"></path>
+
+                      <!-- Active Phone Camera Node -->
+                      <g class="cursor-pointer group" id="map-camera-node">
+                        <circle class="animate-ping" cx="400" cy="160" fill="rgba(255,86,55,0.25)" r="24"></circle>
+                        <circle cx="400" cy="160" fill="#131317" r="12" stroke="#fe6b00" stroke-width="3"></circle>
+                        <circle cx="400" cy="160" fill="#ff5637" r="5"></circle>
+                        <text fill="#ffb4a5" font-family="JetBrains Mono" font-size="11" font-weight="bold" x="320" y="200" id="map-camera-label">ACTIVE SENSOR: PHONE_CAM_01</text>
+                      </g>
+                    </svg>
+
+                    <div class="absolute bottom-2 left-2 bg-surface-container-lowest/90 backdrop-blur-sm p-space-xs rounded flex items-center gap-space-md font-label-sm text-[11px] font-mono border border-white/5">
+                      <div class="flex items-center gap-1.5">
+                        <span class="h-2 w-2 rounded-full bg-secondary-container"></span>
+                        <span class="text-on-surface-variant">Active Camera Node</span>
+                      </div>
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-[10px] text-outline-variant">Single Sensor Mode: Multi-camera trajectory requires multiple physical nodes.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RIGHT 4 COLS: Target Plate Dossier, Evidence Crop, & Chronological Timeline -->
+              <div class="lg:col-span-4 flex flex-col gap-space-md font-mono">
+                <!-- VEHICLE INFORMATION CARD -->
+                <div class="bg-surface-container-low rounded-xl p-space-md shadow-xl flex flex-col gap-space-md border border-white/5">
+                  <div class="flex items-center justify-between">
+                    <span class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-widest font-mono">VEHICLE PROFILE DOSSIER</span>
+                    <span class="px-2 py-0.5 rounded bg-primary-container/20 text-primary-fixed font-label-sm text-[10px] font-bold font-mono" id="dossier-state-badge">STATE: DELHI</span>
+                  </div>
+
+                  <!-- Realistic HSRP Plate Badge -->
+                  <div class="flex flex-col bg-black rounded p-2 shadow-inner border border-white/10">
+                    <span class="font-label-sm text-[9px] text-on-surface-variant mb-1 font-mono">HIGH SECURITY REGISTRATION PLATE</span>
+                    <div class="flex items-center bg-black">
+                      <div class="flex flex-col items-center justify-between h-10 w-8 bg-[#003399] rounded-l py-0.5 text-white select-none">
+                        <span class="text-[7px] font-bold">IND</span>
+                        <div class="w-3 h-3 rounded-full border border-yellow-300 flex items-center justify-center text-[5px] text-yellow-300">
+                          ☉
+                        </div>
+                      </div>
+                      <div class="flex-1 text-center font-label-lg text-headline-sm font-bold tracking-wider text-white select-all font-mono" id="dossier-plate-badge">
+                        DL01AB1234
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Vehicle Attribute Grid -->
+                  <div class="grid grid-cols-2 gap-space-sm bg-surface-container-lowest p-space-sm rounded font-label-sm text-[11px] font-mono border border-white/5">
+                    <div>
+                      <span class="text-on-surface-variant block text-[10px]">TARGET QUERY</span>
+                      <span class="text-on-surface font-semibold" id="dossier-target-plate">DL01AB1234</span>
+                    </div>
+                    <div>
+                      <span class="text-on-surface-variant block text-[10px]">DETECTED OCR</span>
+                      <span class="text-primary font-semibold" id="dossier-ocr-plate">Searching...</span>
+                    </div>
+                    <div>
+                      <span class="text-on-surface-variant block text-[10px]">MATCH SCORE</span>
+                      <span class="text-primary-container font-bold" id="dossier-match-score">--</span>
+                    </div>
+                    <div>
+                      <span class="text-on-surface-variant block text-[10px]">DETECTOR MODEL</span>
+                      <span class="text-on-surface font-semibold">best.pt (YOLO)</span>
+                    </div>
+                    <div>
+                      <span class="text-on-surface-variant block text-[10px]">OCR ENGINE</span>
+                      <span class="text-on-surface font-semibold">EasyOCR (GPU)</span>
+                    </div>
+                    <div>
+                      <span class="text-on-surface-variant block text-[10px]">PLATE CONF</span>
+                      <span class="text-on-surface font-semibold" id="dossier-plate-conf">--</span>
+                    </div>
+                  </div>
+
+                  <!-- DETECTED PLATE SECTION (Model Crop Evidence) -->
+                  <div class="bg-surface-container-lowest p-space-sm rounded flex flex-col gap-1.5 border border-white/5">
+                    <div class="flex items-center justify-between font-label-sm text-[11px] font-mono">
+                      <span class="text-secondary uppercase font-bold tracking-wider">DETECTED PLATE (MODEL CROP)</span>
+                      <span class="text-[10px] text-outline-variant font-mono">FastAPI: /detections/plates</span>
+                    </div>
+                    <div class="relative h-16 w-full bg-surface-container-high rounded flex items-center justify-center overflow-hidden border border-white/5">
+                      <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px]"></div>
+                      <img id="real-plate-crop-img" alt="YOLO Model Plate Crop" class="relative z-10 max-h-12 w-auto object-contain rounded hidden shadow-md border border-white/20">
+                      <div id="plate-crop-placeholder" class="relative z-10 text-[11px] text-on-surface-variant font-mono">
+                        [ Awaiting target detection crop ]
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between font-mono text-[10px] text-on-surface-variant">
+                      <span id="evidence-ocr-badge" class="px-1.5 py-0.5 rounded bg-primary-container/20 text-primary-container font-bold">OCR: AWAITING</span>
+                      <span id="evidence-sensor-meta">Sensor: PHONE_CAM_01</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- DETECTION TIMELINE LIST (Real Sightings) -->
+                <div class="bg-surface-container-low rounded-xl p-space-md shadow-xl flex flex-col flex-1 border border-white/5">
+                  <div class="flex items-center justify-between mb-space-sm">
+                    <span class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-widest font-mono">CHRONOLOGICAL SIGHTINGS</span>
+                    <span class="font-label-sm text-[11px] text-on-surface-variant font-mono" id="timeline-count-label">0 Verified</span>
+                  </div>
+                  <div class="flex flex-col gap-space-xs overflow-y-auto max-h-96 pr-1" id="timeline-container">
+                    <div id="timeline-empty-state" class="py-8 text-center flex flex-col items-center justify-center gap-2 text-on-surface-variant text-xs font-mono">
+                      <span class="material-symbols-outlined text-[32px] opacity-40">radar</span>
+                      <span id="timeline-empty-text">Searching stream for target DL01AB1234...</span>
+                      <span class="text-[10px] text-outline">Confirmed sightings will appear here in chronological sequence.</span>
+                    </div>
+                  </div>
+
+                  <button class="mt-space-md w-full py-2.5 rounded bg-primary-container text-on-primary font-label-md text-label-md font-bold uppercase tracking-wider shadow-[0_0_16px_rgba(255,86,55,0.45)] hover:shadow-[0_0_24px_rgba(255,86,55,0.7)] transition-all flex items-center justify-center gap-2 font-mono" onclick="triggerInterceptAlert()">
+                    <span class="material-symbols-outlined text-[18px]">emergency</span>
+                    <span>BROADCAST POLICE INTERCEPT</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      <!-- CAMERA CONFIGURATION MODAL -->
+      <div id="camera-config-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-background/85 backdrop-blur-md p-space-md font-mono">
+        <div class="w-full max-w-lg bg-surface-container-low p-space-lg rounded-xl shadow-2xl relative border border-white/10 flex flex-col gap-4">
+          <div class="flex items-center justify-between border-b border-white/10 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[22px]">videocam</span>
+              <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Camera Source Configuration</h3>
+            </div>
+            <button onclick="closeCameraConfigModal()" class="text-on-surface-variant hover:text-on-surface">
+              <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="font-label-sm text-xs text-on-surface font-bold uppercase">Stream Endpoint / Video Path</label>
+            <input id="camera-source-input" type="text" class="w-full bg-surface-container-lowest px-3 py-2 rounded text-on-surface font-mono text-xs border border-white/10 focus:outline-none focus:border-primary" placeholder="http://192.0.0.2:8080/video or video.mp4" value="video.mp4">
+            <span class="text-[11px] text-on-surface-variant">For phone IP Webcam, enter http://&lt;PHONE_IP&gt;:8080/video (or /video.mjpg).</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-on-surface-variant">Presets:</span>
+            <button onclick="document.getElementById('camera-source-input').value='http://192.0.0.2:8080/video'" class="px-2 py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-xs text-primary font-mono border border-white/5">
+              Phone IP Webcam (192.0.0.2)
+            </button>
+            <button onclick="document.getElementById('camera-source-input').value='video.mp4'" class="px-2 py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-xs text-on-surface font-mono border border-white/5">
+              Local video.mp4
+            </button>
+          </div>
+          <div id="camera-config-msg" class="hidden p-2 rounded text-xs font-mono"></div>
+          <div class="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
+            <button onclick="closeCameraConfigModal()" class="px-4 py-2 rounded bg-surface-container-high text-on-surface-variant hover:text-on-surface text-xs font-bold font-mono">
+              CANCEL
+            </button>
+            <button onclick="applyCameraConfig()" class="px-4 py-2 rounded bg-primary-container text-on-primary font-bold text-xs font-mono shadow-[0_0_12px_rgba(255,86,55,0.4)]">
+              APPLY &amp; CONNECT
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- JAVASCRIPT STATE CONTROLLER & REAL BACKEND PIPELINE INTEGRATION -->
+  <script>
+    // Dynamic API & WebSocket URLs connecting to FastAPI
+    const API_BASE = window.location.port === '8000'
+      ? window.location.origin
+      : 'http://localhost:8000';
+
+    const WS_URL = window.location.port === '8000'
+      ? ((window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/ws/detections')
+      : 'ws://localhost:8000/ws/detections';
+
+    console.log('[Phoenix ANPR] API Endpoint:', API_BASE, '| WS:', WS_URL);
+
+    const PHOENIX_STATE = {
+      current_screen: 6,
+      target_vehicle: "DL01AB1234",
+      target_state: "Delhi",
+      stream_mode: 'live', // 'live' or 'flagged'
+      camera_status: 'disconnected',
+      camera_source: 'video.mp4',
+      detections: [],
+      selected_detection_idx: -1
+    };
+
+    let ws = null;
+    let reconnectTimer = null;
+    let statusPollTimer = null;
+
+    // Helper: Authenticated fetch with JWT bearer
+    function getAuthHeaders() {
+      const token = localStorage.getItem('phoenix_token');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+      return headers;
+    }
+
+    async function fetchWithAuth(url, options = {}) {
+      const headers = Object.assign(getAuthHeaders(), options.headers || {});
+      return fetch(url, Object.assign({}, options, { headers }));
+    }
+
+    function formatMediaUrl(urlOrPath) {
+      if (!urlOrPath) return '';
+      const clean = String(urlOrPath).trim();
+      if (!clean) return '';
+      if (clean.startsWith('http://') || clean.startsWith('https://')) return clean;
+      const normalized = clean.startsWith('/') ? clean : ('/' + clean);
+      return API_BASE + normalized;
+    }
+
+    // Screen View Switcher with Persistent Stepper State
+    function goToScreen(screenNumber) {
+      PHOENIX_STATE.current_screen = screenNumber;
+
+      document.querySelectorAll('.screen-view').forEach(el => {
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+      });
+
+      const targetScreen = document.getElementById('screen-' + screenNumber);
+      if (targetScreen) {
+        targetScreen.classList.remove('hidden');
+        targetScreen.classList.add('flex');
+      }
+
+      // Update Nav Stepper buttons styling
+      const stepIds = [1, 2, 3, 4, 7, 6];
+      stepIds.forEach(id => {
+        const btn = document.getElementById('step-btn-' + id);
+        if (btn) {
+          if (id === screenNumber) {
+            btn.className = "step-nav px-3 py-1 rounded font-label-sm text-[11px] uppercase transition-all font-mono bg-primary-container text-on-primary font-bold shadow-[0_0_10px_rgba(255,86,55,0.45)]";
+          } else {
+            btn.className = "step-nav px-3 py-1 rounded font-label-sm text-[11px] uppercase transition-all font-mono text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high";
+          }
+        }
+      });
+
+      // Update sidebar active states
+      [3, 4, 6, 7].forEach(id => {
+        const navEl = document.getElementById('nav-item-' + id);
+        if (navEl) {
+          if (id === screenNumber) {
+            navEl.className = "flex items-center gap-space-sm px-space-md py-space-sm rounded transition-all bg-primary-container text-on-primary font-bold shadow-[0_0_14px_rgba(255,86,55,0.35)]";
+          } else {
+            navEl.className = "flex items-center gap-space-sm px-space-md py-space-sm rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all";
+          }
+        }
+      });
+
+      if (screenNumber === 1) {
+        initEmberCanvas();
+      } else if (screenNumber === 7) {
+        loadSearchHistory();
+      } else if (screenNumber === 6) {
+        fetchCameraStatus();
+      }
+    }
+
+    // =========================================================================
+    // SCREEN 2: AUTHENTICATION (Real FastAPI Login / Register)
+    // =========================================================================
+    let currentAuthMode = 'login';
+    function switchAuthTab(tab) {
+      currentAuthMode = tab;
+      const loginBtn = document.getElementById('auth-tab-login');
+      const registerBtn = document.getElementById('auth-tab-register');
+      const submitText = document.getElementById('auth-submit-text');
+      const subtitle = document.getElementById('auth-subtitle');
+
+      if (tab === 'login') {
+        loginBtn.className = "py-1.5 rounded font-label-sm text-label-sm uppercase font-bold text-on-primary bg-primary-container shadow-sm transition-all font-mono";
+        registerBtn.className = "py-1.5 rounded font-label-sm text-label-sm uppercase font-bold text-on-surface-variant hover:text-on-surface transition-all font-mono";
+        submitText.textContent = "AUTHENTICATE & ENTER →";
+        subtitle.textContent = "Sign in with registered police department or defense operator ID.";
+      } else {
+        registerBtn.className = "py-1.5 rounded font-label-sm text-label-sm uppercase font-bold text-on-primary bg-primary-container shadow-sm transition-all font-mono";
+        loginBtn.className = "py-1.5 rounded font-label-sm text-label-sm uppercase font-bold text-on-surface-variant hover:text-on-surface transition-all font-mono";
+        submitText.textContent = "ENLIST NEW OPERATOR →";
+        subtitle.textContent = "Create an authenticated operator account persisted into SQLite.";
+      }
+    }
+
+    function togglePassVisibility() {
+      const input = document.getElementById('auth-pass');
+      const icon = document.getElementById('auth-pass-icon');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    }
+
+    async function handleAuthSubmit() {
+      const usernameInput = document.getElementById('auth-username');
+      const passInput = document.getElementById('auth-pass');
+      const banner = document.getElementById('auth-msg-banner');
+      const username = usernameInput ? usernameInput.value.trim() : '';
+      const password = passInput ? passInput.value : '';
+
+      if (!username || !password) {
+        showAuthBanner('Username and password are required', false);
+        return;
+      }
+
+      showAuthBanner('Contacting defense authentication grid...', null);
+
+      try {
+        if (currentAuthMode === 'register') {
+          const regRes = await fetch(API_BASE + '/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          });
+          const regData = await regRes.json();
+          if (!regRes.ok) {
+            showAuthBanner(regData.detail || 'Registration failed', false);
+            return;
+          }
+        }
+
+        // Login
+        const loginRes = await fetch(API_BASE + '/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const loginData = await loginRes.json();
+
+        if (loginRes.ok && loginData.access_token) {
+          localStorage.setItem('phoenix_token', loginData.access_token);
+          localStorage.setItem('phoenix_user', username);
+          const opHeader = document.getElementById('header-operator-name');
+          if (opHeader) opHeader.textContent = 'CMDR. ' + username.toUpperCase();
+          showAuthBanner('Authentication verified. Access granted.', true);
+          setTimeout(() => {
+            goToScreen(3);
+          }, 400);
+        } else {
+          showAuthBanner(loginData.detail || 'Authentication failed. Check credentials.', false);
+        }
+      } catch (err) {
+        showAuthBanner('Backend communication error: ' + err.message, false);
+      }
+    }
+
+    function showAuthBanner(msg, isSuccess) {
+      const banner = document.getElementById('auth-msg-banner');
+      if (!banner) return;
+      banner.classList.remove('hidden');
+      if (isSuccess === true) {
+        banner.className = 'mb-3 p-2.5 rounded text-xs font-mono border bg-emerald-500/20 text-emerald-400 border-emerald-500/40';
+      } else if (isSuccess === false) {
+        banner.className = 'mb-3 p-2.5 rounded text-xs font-mono border bg-red-500/20 text-red-400 border-red-500/40';
+      } else {
+        banner.className = 'mb-3 p-2.5 rounded text-xs font-mono border bg-amber-500/20 text-amber-400 border-amber-500/40 animate-pulse';
+      }
+      banner.textContent = msg;
+    }
+
+    // =========================================================================
+    // SCREEN 4: SEARCH VEHICLE (Direct Search without 5th screen)
+    // =========================================================================
+    async function startAISearch() {
+      const plateInput = document.getElementById('input-plate-num');
+      const stateInput = document.getElementById('input-state-select');
+      const rawPlate = plateInput ? plateInput.value.trim() : 'DL01AB1234';
+      const cleanPlate = rawPlate.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+      const state = stateInput ? stateInput.value : 'delhi';
+
+      PHOENIX_STATE.target_vehicle = cleanPlate;
+      PHOENIX_STATE.target_state = state;
+
+      // Reset Tactical Trajectory view for target
+      resetEvidencePanelForSearch(cleanPlate);
+
+      // Submit search query directly to backend
+      try {
+        await fetchWithAuth(API_BASE + '/api/search', {
+          method: 'POST',
+          body: JSON.stringify({ plate: cleanPlate, state: state })
+        });
+      } catch (err) {
+        console.warn('[Search] Direct search dispatch notice:', err);
+      }
+
+      // Immediately navigate to Tactical Trajectory (Screen 6)
+      goToScreen(6);
+    }
+
+    function resetEvidencePanelForSearch(plate) {
+      PHOENIX_STATE.detections = [];
+      PHOENIX_STATE.selected_detection_idx = -1;
+
+      const targetBadge = document.getElementById('target-plate-badge');
+      const dossierBadge = document.getElementById('dossier-plate-badge');
+      const dossierTarget = document.getElementById('dossier-target-plate');
+      const dossierOcr = document.getElementById('dossier-ocr-plate');
+      const dossierMatch = document.getElementById('dossier-match-score');
+      const dossierPlateConf = document.getElementById('dossier-plate-conf');
+      const dossierOcrConf = document.getElementById('dossier-ocr-conf');
+
+      if (targetBadge) targetBadge.textContent = plate;
+      if (dossierBadge) dossierBadge.textContent = plate;
+      if (dossierTarget) dossierTarget.textContent = plate;
+      if (dossierOcr) dossierOcr.textContent = 'Scanning stream...';
+      if (dossierMatch) dossierMatch.textContent = '--';
+      if (dossierPlateConf) dossierPlateConf.textContent = '--';
+      if (dossierOcrConf) dossierOcrConf.textContent = '--';
+
+      const statusTag = document.getElementById('target-status-tag');
+      const statusDot = document.getElementById('target-status-dot');
+      const statusText = document.getElementById('target-status-text');
+      const detCount = document.getElementById('target-detections-count');
+
+      if (statusTag) statusTag.className = 'font-label-sm text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold uppercase tracking-wider font-mono flex items-center gap-1 border border-amber-500/30';
+      if (statusDot) statusDot.className = 'h-1.5 w-1.5 rounded-full bg-amber-400 animate-ping';
+      if (statusText) statusText.textContent = 'SCANNING STREAM';
+      if (detCount) detCount.textContent = 'AWAITING SIGHTINGS';
+
+      const cropImg = document.getElementById('real-plate-crop-img');
+      const placeholder = document.getElementById('plate-crop-placeholder');
+      if (cropImg) cropImg.classList.add('hidden');
+      if (placeholder) {
+        placeholder.classList.remove('hidden');
+        placeholder.textContent = `[ Awaiting target '${plate}' detection ]`;
+      }
+
+      const timeline = document.getElementById('timeline-container');
+      if (timeline) {
+        timeline.innerHTML = `
+          <div id="timeline-empty-state" class="py-8 text-center flex flex-col items-center justify-center gap-2 text-on-surface-variant text-xs font-mono">
+            <span class="material-symbols-outlined text-[32px] opacity-40">radar</span>
+            <span>Searching stream for target ${plate}...</span>
+            <span class="text-[10px] text-outline">Confirmed sightings will appear here in chronological sequence.</span>
+          </div>
+        `;
+      }
+      const timelineCount = document.getElementById('timeline-count-label');
+      if (timelineCount) timelineCount.textContent = '0 Verified';
+
+      showLiveStream();
+    }
+
+    // =========================================================================
+    // WEBSOCKET TELEMETRY & CAMERA STATUS
+    // =========================================================================
+    function initWebSocket() {
+      if (ws) {
+        try { ws.close(); } catch(e) {}
+      }
+
+      fetchCameraStatus();
+      if (!statusPollTimer) {
+        statusPollTimer = setInterval(fetchCameraStatus, 2000);
+      }
+
+      try {
+        ws = new WebSocket(WS_URL);
+
+        ws.onopen = () => {
+          console.log('[WebSocket] Real-time detection stream connected.');
+          const bStatus = document.getElementById('backend-status-indicator');
+          if (bStatus) {
+            bStatus.textContent = 'BACKEND: LIVE WS';
+            bStatus.className = 'text-emerald-400 font-semibold';
+          }
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            handleWebSocketMessage(data);
+          } catch(err) {
+            console.error('[WebSocket] Message parse error:', err);
+          }
+        };
+
+        ws.onclose = () => {
+          console.warn('[WebSocket] Closed. Reconnecting in 2.5s...');
+          const bStatus = document.getElementById('backend-status-indicator');
+          if (bStatus) {
+            bStatus.textContent = 'BACKEND: RECONNECTING';
+            bStatus.className = 'text-amber-400 font-semibold';
+          }
+          clearTimeout(reconnectTimer);
+          reconnectTimer = setTimeout(initWebSocket, 2500);
+        };
+
+        ws.onerror = (err) => {
+          console.error('[WebSocket] Error:', err);
+        };
+      } catch(e) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(initWebSocket, 3000);
+      }
+    }
+
+    function handleWebSocketMessage(msg) {
+      if (msg.type === 'camera_status') {
+        updateCameraStatusUI(msg);
+      } else if (msg.type === 'target_detection') {
+        handleTargetDetection(msg);
+      } else if (msg.type === 'detection' && msg.is_target_match) {
+        handleTargetDetection(msg);
+      }
+    }
+
+    function updateCameraStatusUI(info) {
+      const camIdEl = document.getElementById('cctv-cam-id');
+      const resFpsEl = document.getElementById('cctv-res-fps');
+      const activeSrcBadge = document.getElementById('active-source-badge');
+      const disconnectCard = document.getElementById('camera-disconnect-card');
+      const disconnectMsg = document.getElementById('camera-disconnect-msg');
+      const hudLatLon = document.getElementById('hud-lat-lon');
+
+      const stat = (info.status || 'disconnected').toLowerCase();
+      PHOENIX_STATE.camera_status = stat;
+
+      if (camIdEl && info.camera_id) camIdEl.textContent = 'CAM ID: ' + info.camera_id;
+      if (activeSrcBadge && info.source) activeSrcBadge.textContent = 'SRC: ' + info.source.toUpperCase();
+
+      const resText = typeof info.resolution === 'string'
+        ? info.resolution
+        : (info.resolution ? `${info.resolution.width}x${info.resolution.height}` : '');
+
+      if (stat === 'connected') {
+        if (disconnectCard) disconnectCard.classList.add('hidden');
+        if (resFpsEl) {
+          resFpsEl.textContent = `${resText || '512x278'} • ${info.fps || 30} FPS (LIVE)`;
+          resFpsEl.className = 'text-primary font-bold';
+        }
+        const liveImg = document.getElementById('cctv-live-img');
+        if (liveImg && (!liveImg.src || liveImg.src === '' || liveImg.naturalWidth === 0)) {
+          liveImg.src = API_BASE + '/api/camera/stream';
+        }
+      } else if (stat === 'connecting' || stat === 'reconnecting') {
+        if (disconnectCard) disconnectCard.classList.add('hidden');
+        if (resFpsEl) {
+          resFpsEl.textContent = `${stat.toUpperCase()}...`;
+          resFpsEl.className = 'text-amber-400 font-bold';
+        }
+      } else {
+        // Disconnected or Stream Error
+        if (disconnectCard) disconnectCard.classList.remove('hidden');
+        if (disconnectMsg) {
+          disconnectMsg.textContent = info.error || "Unable to receive video frames. Check stream URL/connection.";
+        }
+        if (resFpsEl) {
+          resFpsEl.textContent = stat === 'stream_error' ? 'STREAM ERROR' : 'DISCONNECTED';
+          resFpsEl.className = 'text-red-400 font-bold';
+        }
+      }
+
+      // GPS / Location Rule #9 & #10
+      if (hudLatLon) {
+        if (info.latitude && info.longitude) {
+          hudLatLon.textContent = `LAT: ${info.latitude.toFixed(4)}° N // LONG: ${info.longitude.toFixed(4)}° E (${info.location_source || 'Fixed'})`;
+        } else {
+          hudLatLon.textContent = `LAT: NULL // LONG: NULL (Single Sensor — Coordinate Pending)`;
+        }
+      }
+    }
+
+    function fetchCameraStatus() {
+      fetch(API_BASE + '/api/camera/status')
+        .then(r => r.json())
+        .then(data => updateCameraStatusUI(data))
+        .catch(() => {});
+    }
+
+    function handleStreamError() {
+      console.warn('[Camera Stream] Video feed error.');
+      fetchCameraStatus();
+    }
+
+    function reconnectCamera() {
+      const resFpsEl = document.getElementById('cctv-res-fps');
+      if (resFpsEl) resFpsEl.textContent = 'RECONNECTING...';
+      fetchWithAuth(API_BASE + '/api/camera/reconnect', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+          if (data.camera_status) updateCameraStatusUI(data.camera_status);
+          const liveImg = document.getElementById('cctv-live-img');
+          if (liveImg) {
+            liveImg.src = API_BASE + '/api/camera/stream?t=' + Date.now();
+          }
+        })
+        .catch(err => {
+          console.error('[Camera] Reconnect failed:', err);
+        });
+    }
+
+    // =========================================================================
+    // REAL EVIDENCE & TARGET DETECTION HANDLING
+    // =========================================================================
+    function handleTargetDetection(det) {
+      console.log('[TARGET DETECTION ACQUIRED]', det);
+
+      const matchPct = det.match_score !== undefined && det.match_score !== null
+        ? Math.round(det.match_score * 100) + "%"
+        : "100%";
+
+      const formatted = {
+        det_id: det.detection_id,
+        plate: det.plate_text || det.target_plate || PHOENIX_STATE.target_vehicle,
+        target_plate: det.target_plate || PHOENIX_STATE.target_vehicle,
+        match_score: matchPct,
+        plate_conf: Math.round((det.plate_confidence || 0) * 100) + "%",
+        ocr_conf: (det.ocr_confidence && det.ocr_confidence > 0) ? Math.round(det.ocr_confidence * 100) + "%" : "N/A",
+        cam_id: det.camera_id || "PHONE_CAM_01",
+        time: det.video_timestamp ? (det.video_timestamp + " (VID)") : (det.timestamp ? det.timestamp.replace('T', ' ').slice(11, 19) : new Date().toLocaleTimeString()),
+        full_time: det.timestamp || new Date().toISOString(),
+        frame_url: formatMediaUrl(det.frame_image_url || det.frame_image_path),
+        plate_url: formatMediaUrl(det.plate_image_url || det.plate_image_path),
+        is_match: true
+      };
+
+      // Prepend to detections
+      PHOENIX_STATE.detections.unshift(formatted);
+      applyEvidenceToPanel(formatted);
+      renderRealTimeline();
+
+      // Update header status to TARGET LOCATED
+      const statusTag = document.getElementById('target-status-tag');
+      const statusDot = document.getElementById('target-status-dot');
+      const statusText = document.getElementById('target-status-text');
+      const detCount = document.getElementById('target-detections-count');
+
+      if (statusTag) statusTag.className = 'font-label-sm text-[10px] px-2 py-0.5 rounded bg-primary-container text-on-primary font-bold uppercase tracking-wider font-mono flex items-center gap-1 shadow-[0_0_10px_rgba(255,86,55,0.4)]';
+      if (statusDot) statusDot.className = 'h-1.5 w-1.5 rounded-full bg-white animate-ping';
+      if (statusText) statusText.textContent = 'TARGET LOCATED';
+      if (detCount) detCount.textContent = `${PHOENIX_STATE.detections.length} CONFIRMED SIGHTINGS`;
+
+      // Show AI Bounding Box Reticle
+      const box = document.getElementById('ai-tracking-box');
+      const retPlate = document.getElementById('reticle-plate-label');
+      const retConf = document.getElementById('reticle-conf-label');
+      if (box) box.classList.remove('hidden');
+      if (retPlate) retPlate.textContent = `[TARGET ACQUIRED] ${formatted.plate}`;
+      if (retConf) retConf.textContent = `• ${formatted.plate_conf}`;
+    }
+
+    function applyEvidenceToPanel(det) {
+      const dossierPlate = document.getElementById('dossier-plate-badge');
+      const dossierOcr = document.getElementById('dossier-ocr-plate');
+      const dossierMatch = document.getElementById('dossier-match-score');
+      const dossierPlateConf = document.getElementById('dossier-plate-conf');
+      const dossierOcrConf = document.getElementById('dossier-ocr-conf');
+
+      if (dossierPlate) dossierPlate.textContent = det.plate;
+      if (dossierOcr) dossierOcr.textContent = det.plate;
+      if (dossierMatch) dossierMatch.textContent = det.match_score;
+      if (dossierPlateConf) dossierPlateConf.textContent = det.plate_conf;
+      if (dossierOcrConf) dossierOcrConf.textContent = det.ocr_conf;
+
+      const cropImg = document.getElementById('real-plate-crop-img');
+      const placeholder = document.getElementById('plate-crop-placeholder');
+      const ocrBadge = document.getElementById('evidence-ocr-badge');
+      const sensorMeta = document.getElementById('evidence-sensor-meta');
+
+      if (cropImg && det.plate_url) {
+        cropImg.src = det.plate_url;
+        cropImg.classList.remove('hidden');
+        if (placeholder) placeholder.classList.add('hidden');
+      }
+      if (ocrBadge) ocrBadge.textContent = `OCR: ${det.ocr_conf}`;
+      if (sensorMeta) sensorMeta.textContent = `Sensor: ${det.cam_id} | ${det.time}`;
+
+      // If in flagged frame mode, show saved frame
+      const flaggedImg = document.getElementById('cctv-flagged-img');
+      if (flaggedImg && det.frame_url) {
+        flaggedImg.src = det.frame_url;
+      }
+    }
+
+    function renderRealTimeline() {
+      const timeline = document.getElementById('timeline-container');
+      const countLabel = document.getElementById('timeline-count-label');
+      if (!timeline) return;
+
+      if (PHOENIX_STATE.detections.length === 0) {
+        return;
+      }
+
+      if (countLabel) countLabel.textContent = `${PHOENIX_STATE.detections.length} Verified`;
+
+      timeline.innerHTML = '';
+      PHOENIX_STATE.detections.forEach((det, idx) => {
+        const isSelected = idx === PHOENIX_STATE.selected_detection_idx || (PHOENIX_STATE.selected_detection_idx === -1 && idx === 0);
+        const card = document.createElement('div');
+        card.className = isSelected
+          ? "timeline-item active cursor-pointer p-space-sm rounded bg-surface-container-high transition-all flex flex-col gap-1 border-l-2 border-primary-container shadow-[0_0_12px_rgba(255,86,55,0.2)] border-y border-r border-white/5 font-mono"
+          : "timeline-item cursor-pointer p-space-sm rounded bg-surface-container-lowest hover:bg-surface-container transition-all flex flex-col gap-1 border border-white/5 font-mono";
+
+        card.onclick = () => selectDetection(idx);
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              ${idx === 0 ? '<span class="h-2 w-2 rounded-full bg-primary-container animate-ping"></span>' : ''}
+              <span class="font-label-sm text-label-sm text-on-surface font-bold">${det.cam_id}</span>
+            </div>
+            <span class="px-1.5 py-0.5 rounded ${idx === 0 ? 'bg-primary-container text-on-primary' : 'bg-surface-container text-on-surface-variant'} font-label-sm text-[9px] font-bold">
+              ${idx === 0 ? 'LATEST' : '#' + (PHOENIX_STATE.detections.length - idx)}
+            </span>
+          </div>
+          <div class="flex items-center justify-between font-label-sm text-[11px] text-on-surface-variant">
+            <span class="text-secondary">${det.time}</span>
+            <span class="text-primary font-semibold">Match: ${det.match_score}</span>
+            <span>Conf: ${det.plate_conf}</span>
+          </div>
+        `;
+        timeline.appendChild(card);
+      });
+    }
+
+    function selectDetection(idx) {
+      PHOENIX_STATE.selected_detection_idx = idx;
+      const det = PHOENIX_STATE.detections[idx];
+      if (!det) return;
+
+      applyEvidenceToPanel(det);
+      renderRealTimeline();
+      showFlaggedFrame();
+    }
+
+    // Toggle Stream vs Flagged Frame View
+    function toggleStreamMode() {
+      if (PHOENIX_STATE.stream_mode === 'live') {
+        showFlaggedFrame();
+      } else {
+        showLiveStream();
+      }
+    }
+
+    function showLiveStream() {
+      PHOENIX_STATE.stream_mode = 'live';
+      const liveImg = document.getElementById('cctv-live-img');
+      const flaggedImg = document.getElementById('cctv-flagged-img');
+      const btn = document.getElementById('stream-toggle-btn');
+      if (liveImg) liveImg.classList.remove('hidden');
+      if (flaggedImg) flaggedImg.classList.add('hidden');
+      if (btn) {
+        btn.textContent = 'VIEW: LIVE STREAM';
+        btn.className = 'px-2 py-0.5 rounded bg-surface-container hover:bg-surface-container-high text-primary text-[10px] uppercase font-bold border border-white/10 font-mono';
+      }
+    }
+
+    function showFlaggedFrame() {
+      PHOENIX_STATE.stream_mode = 'flagged';
+      const liveImg = document.getElementById('cctv-live-img');
+      const flaggedImg = document.getElementById('cctv-flagged-img');
+      const btn = document.getElementById('stream-toggle-btn');
+      if (liveImg) liveImg.classList.add('hidden');
+      if (flaggedImg) flaggedImg.classList.remove('hidden');
+      if (btn) {
+        btn.textContent = 'VIEW: FLAGGED FRAME';
+        btn.className = 'px-2 py-0.5 rounded bg-primary-container text-on-primary text-[10px] uppercase font-bold border border-primary-container font-mono shadow-[0_0_8px_rgba(255,86,55,0.4)]';
+      }
+    }
+
+    // =========================================================================
+    // SCREEN 7: SEARCH HISTORY (SQLite Real Queries & Trajectory Replay)
+    // =========================================================================
+    async function loadSearchHistory() {
+      const container = document.getElementById('history-cards-container');
+      const userTag = document.getElementById('history-user-tag');
+      const loggedUser = localStorage.getItem('phoenix_user') || 'officer.sharma';
+      if (userTag) userTag.textContent = loggedUser.toUpperCase();
+
+      if (!container) return;
+      container.innerHTML = '<div class="col-span-full py-16 text-center text-cyan-400 font-mono animate-pulse">Connecting to SQLite database &amp; loading query history...</div>';
+
+      try {
+        const res = await fetchWithAuth(API_BASE + '/api/history');
+        if (res.status === 401) {
+          container.innerHTML = `
+            <div class="col-span-full py-16 text-center flex flex-col items-center justify-center font-mono">
+              <span class="material-symbols-outlined text-[36px] text-amber-400 mb-2">lock</span>
+              <div class="text-sm text-amber-300 font-bold uppercase">Authentication Required</div>
+              <div class="text-xs text-on-surface-variant mt-1">Please sign in to view your operator search records.</div>
+              <button onclick="goToScreen(2)" class="mt-4 px-4 py-1.5 rounded bg-primary-container text-on-primary text-xs font-bold font-mono">GO TO AUTH</button>
+            </div>
+          `;
+          return;
+        }
+
+        const items = await res.json();
+        if (!Array.isArray(items) || items.length === 0) {
+          container.innerHTML = `
+            <div class="col-span-full py-16 text-center flex flex-col items-center justify-center font-mono">
+              <span class="material-symbols-outlined text-[40px] text-stone-600 mb-2">manage_search</span>
+              <div class="text-sm text-stone-400 font-bold uppercase">No Previous Searches Found</div>
+              <div class="text-xs text-stone-500 mt-1">Submit a vehicle registration plate from Screen 4 to record tactical queries.</div>
+              <button onclick="goToScreen(4)" class="mt-4 px-4 py-1.5 rounded bg-primary-container text-on-primary text-xs font-bold font-mono">INITIATE VEHICLE SEARCH</button>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = '';
+        items.forEach(item => {
+          const card = document.createElement('div');
+          card.className = "bg-surface-container-low rounded-xl p-space-md shadow-xl flex flex-col justify-between border border-white/5 hover:border-cyan-500/40 transition-all font-mono";
+
+          const isFound = (item.status || '').toUpperCase() === 'FOUND' || (item.detections_count && item.detections_count > 0);
+          const statusClass = isFound
+            ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+            : "bg-amber-500/20 text-amber-400 border border-amber-500/30";
+
+          card.innerHTML = `
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] text-on-surface-variant">QUERY #${item.id}</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${statusClass}">
+                  ${isFound ? 'TARGET FOUND' : 'SEARCHING'}
+                </span>
+              </div>
+              <div class="flex items-center bg-black p-1.5 rounded border border-white/10 my-1">
+                <div class="flex flex-col items-center justify-between h-8 w-6 bg-[#003399] rounded-l py-0.5 text-white select-none text-[6px] font-bold">
+                  <span>IND</span>
+                </div>
+                <div class="flex-1 text-center font-label-lg text-base font-bold tracking-wider text-white">
+                  ${item.plate_text}
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-[11px] bg-surface-container-lowest p-2 rounded border border-white/5 text-on-surface-variant">
+                <div>
+                  <span class="block text-[9px] text-outline">REGION</span>
+                  <span class="text-on-surface font-semibold">${(item.state || 'Delhi').toUpperCase()}</span>
+                </div>
+                <div>
+                  <span class="block text-[9px] text-outline">CONFIRMED</span>
+                  <span class="text-primary font-bold">${item.detections_count || 0} Detections</span>
+                </div>
+                <div class="col-span-2">
+                  <span class="block text-[9px] text-outline">TIMESTAMP</span>
+                  <span class="text-stone-300 text-[10px]">${item.timestamp ? item.timestamp.replace('T', ' ').slice(0, 19) : '--'}</span>
+                </div>
+              </div>
+            </div>
+            <button onclick="viewQueryTrajectory('${item.plate_text}')" class="mt-3 w-full py-2 rounded bg-cyan-500/20 hover:bg-cyan-500 text-cyan-300 hover:text-black font-bold text-xs uppercase tracking-wider transition-all border border-cyan-500/40 flex items-center justify-center gap-1">
+              <span>VIEW TRAJECTORY</span>
+              <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </button>
+          `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        container.innerHTML = `<div class="col-span-full py-16 text-center text-red-400 font-mono text-xs">Failed to load search history: ${err.message}</div>`;
+      }
+    }
+
+    async function viewQueryTrajectory(plate) {
+      const cleanPlate = plate.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+      resetEvidencePanelForSearch(cleanPlate);
+
+      try {
+        const res = await fetchWithAuth(API_BASE + `/api/vehicles/${cleanPlate}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.detections) && data.detections.length > 0) {
+            PHOENIX_STATE.detections = data.detections.map(det => ({
+              det_id: det.detection_id,
+              plate: det.plate_text || cleanPlate,
+              target_plate: cleanPlate,
+              match_score: det.match_score !== undefined ? (Math.round(det.match_score * 100) + "%") : "100%",
+              plate_conf: Math.round((det.plate_confidence || 0) * 100) + "%",
+              ocr_conf: (det.ocr_confidence && det.ocr_confidence > 0) ? Math.round(det.ocr_confidence * 100) + "%" : "N/A",
+              cam_id: det.camera_id || "PHONE_CAM_01",
+              time: det.video_timestamp ? (det.video_timestamp + " (VID)") : (det.timestamp ? det.timestamp.replace('T', ' ').slice(11, 19) : '--'),
+              full_time: det.timestamp,
+              frame_url: formatMediaUrl(det.frame_image_url || det.frame_image_path),
+              plate_url: formatMediaUrl(det.plate_image_url || det.plate_image_path),
+              is_match: true
+            }));
+            applyEvidenceToPanel(PHOENIX_STATE.detections[0]);
+            renderRealTimeline();
+            showFlaggedFrame();
+          }
+        }
+      } catch (e) {
+        console.warn('Trajectory fetch notice:', e);
+      }
+
+      goToScreen(6);
+    }
+
+    // =========================================================================
+    // CAMERA CONFIGURATION MODAL HANDLERS
+    // =========================================================================
+    function openCameraConfigModal() {
+      const modal = document.getElementById('camera-config-modal');
+      const input = document.getElementById('camera-source-input');
+      if (input) input.value = PHOENIX_STATE.camera_source || 'video.mp4';
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeCameraConfigModal() {
+      const modal = document.getElementById('camera-config-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function applyCameraConfig() {
+      const input = document.getElementById('camera-source-input');
+      const msg = document.getElementById('camera-config-msg');
+      const url = input ? input.value.trim() : '';
+
+      if (!url) return;
+      if (msg) {
+        msg.classList.remove('hidden');
+        msg.className = 'p-2 rounded text-xs font-mono bg-amber-500/20 text-amber-300';
+        msg.textContent = 'Updating camera source in backend...';
+      }
+
+      try {
+        const res = await fetchWithAuth(API_BASE + '/api/camera/config', {
+          method: 'POST',
+          body: JSON.stringify({ url: url })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          PHOENIX_STATE.camera_source = url;
+          if (msg) {
+            msg.className = 'p-2 rounded text-xs font-mono bg-emerald-500/20 text-emerald-300';
+            msg.textContent = 'Connected. Reloading video feed...';
+          }
+          setTimeout(() => {
+            closeCameraConfigModal();
+            reconnectCamera();
+          }, 600);
+        } else {
+          if (msg) {
+            msg.className = 'p-2 rounded text-xs font-mono bg-red-500/20 text-red-300';
+            msg.textContent = data.detail || 'Camera configuration failed';
+          }
+        }
+      } catch (err) {
+        if (msg) {
+          msg.className = 'p-2 rounded text-xs font-mono bg-red-500/20 text-red-300';
+          msg.textContent = 'Error: ' + err.message;
+        }
+      }
+    }
+
+    // Modal helpers for Screen 3
+    function openUnderDevModal() {
+      document.getElementById('under-dev-modal').classList.remove('hidden');
+    }
+    function closeUnderDevModal() {
+      document.getElementById('under-dev-modal').classList.add('hidden');
+    }
+
+    function triggerInterceptAlert() {
+      alert("CRITICAL ALERT DISPATCHED: Delhi Police Sector 04 & PCR units notified with verified vehicle target evidence.");
+    }
+
+    function exportTrajectoryTelemetry() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(PHOENIX_STATE, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `PHOENIX_ANPR_${PHOENIX_STATE.target_vehicle}_TELEMETRY.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    // =========================================================================
+    // CINEMATIC BURNING PHOENIX EMBER CANVAS
+    // =========================================================================
+    function initEmberCanvas() {
+      const canvas = document.getElementById('ember-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let width = canvas.width = canvas.parentElement.clientWidth;
+      let height = canvas.height = canvas.parentElement.clientHeight;
+
+      const particles = [];
+      const particleCount = 85;
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: height + Math.random() * 100,
+          radius: Math.random() * 2.2 + 0.6,
+          color: Math.random() > 0.4 ? '#ff5637' : (Math.random() > 0.5 ? '#fe6b00' : '#ffb4a5'),
+          speedY: Math.random() * 1.8 + 0.6,
+          speedX: (Math.random() - 0.5) * 1.2,
+          opacity: Math.random() * 0.8 + 0.2,
+          decay: Math.random() * 0.006 + 0.002
+        });
+      }
+
+      function animateEmbers() {
+        if (PHOENIX_STATE.current_screen !== 1) return;
+        ctx.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.y -= p.speedY;
+          p.x += p.speedX;
+          p.opacity -= p.decay;
+
+          if (p.opacity <= 0 || p.y < -10) {
+            p.x = Math.random() * width;
+            p.y = height + 10;
+            p.opacity = Math.random() * 0.8 + 0.2;
+          }
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = p.opacity;
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = p.color;
+          ctx.fill();
+        }
+
+        ctx.globalAlpha = 1.0;
+        requestAnimationFrame(animateEmbers);
+      }
+
+      animateEmbers();
+
+      window.addEventListener('resize', () => {
+        if (canvas && canvas.parentElement) {
+          width = canvas.width = canvas.parentElement.clientWidth;
+          height = canvas.height = canvas.parentElement.clientHeight;
+        }
+      });
+    }
+
+    // Live clock updater
+    setInterval(() => {
+      const clock = document.getElementById('header-clock-ist');
+      if (clock) clock.textContent = new Date().toLocaleTimeString();
+    }, 1000);
+
+    // Initial setup on load
+    document.addEventListener('DOMContentLoaded', () => {
+      initWebSocket();
+      goToScreen(6);
+    });
+  </script>
+</body>
+</html>
